@@ -1,0 +1,31 @@
+#!name = 泉州住建局人才房监控
+#!desc = 自动获取Token并监控泉州住建局人才房源信息，支持定时检查和推送通知。\n具体使用方法：1.开启Token获取功能并访问泉州住建局网站；2.开启房源监控功能；3.根据需要调整监控频率。
+#!openUrl = https://qzzhzj.quanzhou.gov.cn/sjzx/qzssjgx/qzhousingsecurityh/
+#!author = AI Assistant
+#!tag = 定时任务, 房源监控
+#!system =
+#!system_version =
+#!loon_version = 3.3.2(877)
+#!homepage = https://github.com/user/rcf-monitor
+#!icon = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/House.png
+#!date = 2025-01-23 16:47:00
+
+[Argument]
+# 泉州住建局Token获取
+Cookie-rcftoken = switch, true, false, tag = [泉州住建局]Token获取开关, desc = 开启后访问泉州住建局网站自动获取Token
+Task-rcfmonitor = switch, true, false, tag = [泉州住建局]房源监控开关, desc = 开启后定时监控人才房源信息
+Cron-rcfmonitor = input, "0 */1 * * * *", tag = [泉州住建局]监控频率设置, desc = 输入Cron表达式设置监控频率（默认每分钟）
+Debug-rcf = switch, false, true, tag = [泉州住建局]调试模式, desc = 开启后输出详细调试信息
+
+[Script]
+# Token获取脚本 - 捕获请求头中的Token
+http-request ^https://qzzhzj\.quanzhou\.gov\.cn/sjzx/qzssjgx/qz-housing-security/app/.* script-path = rcfToken.js, requires-body = true, tag = [泉州住建局]Token获取, enable={Cookie-rcftoken}
+
+# 房源监控脚本 - 定时任务
+cron {Cron-rcfmonitor} script-path = rcf.js, tag = [泉州住建局]房源监控, enable={Task-rcfmonitor}
+
+# Token验证脚本 - 手动执行
+generic script-path = rcfToken.js, tag = [泉州住建局]Token验证
+
+[MITM]
+hostname = qzzhzj.quanzhou.gov.cn
