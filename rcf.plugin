@@ -16,26 +16,12 @@ Cookie-rcftoken = switch, true, false, tag = [泉州住建局]Token获取开关,
 Task-rcfmonitor = switch, true, false, tag = [泉州住建局]房源监控开关, desc = 开启后定时监控人才房源信息
 Cron-rcfmonitor = input, "0 */1 * * * *", tag = [泉州住建局]监控频率设置, desc = 输入Cron表达式设置监控频率（默认每分钟）
 
-# 调试和测试功能
-Debug-rcf = switch, false, true, tag = [泉州住建局]调试模式, desc = 开启后输出详细调试信息
-Test-token = switch, false, true, tag = [泉州住建局]Token测试, desc = 开启后可手动测试Token有效性
-Test-api = switch, false, true, tag = [泉州住建局]API测试, desc = 开启后可手动测试API连接
-Test-monitor = switch, false, true, tag = [泉州住建局]监控测试, desc = 开启后可手动触发房源监控测试
-
 [Script]
 # Token获取脚本 - 捕获请求头中的Token（排除房源查询API）
 http-request ^https://qzzhzj\.quanzhou\.gov\.cn/sjzx/qzssjgx/qz-housing-security/app/(?!fy/rcfviewfyList).* script-path = rcfToken.js, requires-body = true, tag = [泉州住建局]Token获取, enable={Cookie-rcftoken}
 
 # 房源监控脚本 - 定时任务
 cron {Cron-rcfmonitor} script-path = rcf.js, tag = [泉州住建局]房源监控, enable={Task-rcfmonitor}
-
-# Token验证脚本 - 手动执行
-generic script-path = rcfToken.js, tag = [泉州住建局]Token验证
-
-# 测试功能脚本
-generic script-path = rcfToken.js, tag = [泉州住建局]Token测试, enable={Test-token}
-generic script-path = rcf.js, tag = [泉州住建局]API连接测试, enable={Test-api}
-generic script-path = rcf.js, tag = [泉州住建局]监控功能测试, enable={Test-monitor}
 
 [MITM]
 hostname = qzzhzj.quanzhou.gov.cn
